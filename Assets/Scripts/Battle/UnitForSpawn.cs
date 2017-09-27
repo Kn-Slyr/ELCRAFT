@@ -11,7 +11,7 @@ public abstract class UnitForSpawn : MonoBehaviour
 		return true;
 	}
 
-	void Spawn()
+	void Spawn(int x, int y)
 	{
 
 	}

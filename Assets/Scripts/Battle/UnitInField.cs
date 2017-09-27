@@ -4,8 +4,6 @@ using UnityEngine;
 
 public abstract class UnitInField : MonoBehaviour
 {
-
-	
 	void Start ()
 	{
 		

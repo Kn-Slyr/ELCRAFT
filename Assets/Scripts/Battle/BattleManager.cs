@@ -78,7 +78,7 @@ public class BattleManager : MonoBehaviour
 		// spawnQueue.add(loaded enemy's queue);
 		for (int i = 0; i < spawnQueue.Length; i++)
 		{
-			// spawn for FIFO
+			// spawn for FIFO, Battlecry
 			// yield return new WaitForSeconds(spawnInterval);
 		}
 
@@ -89,6 +89,8 @@ public class BattleManager : MonoBehaviour
 	void SkillProcedure()
 	{
 		turn = Turn.NONE;
+
+
 	}
 
 	// unit's indivisual skill, move procedure
