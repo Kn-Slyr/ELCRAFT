@@ -21,19 +21,21 @@ public class BattleStat
 		playerManaLevel = 1;
 		playerCoreHP = 1000;
 
-		// enemy's stat will be called from db
+		// @@enemy's stat will be called from db
 	}
 }
+
+public enum Turn { PLAYER, SPAWN, SKILL, PROCEDURE, NONE };
 
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance = null;
 
-	public enum Turn { PLAYER, SPAWN, SKILL, PROCEDURE, NONE };
 	public Turn turn;
 
-	public UnitInField[] unitsInField;
-	public UnitInField[] spawnQueue;
+	public UnitForBattle[] liveUnitList;
+	public UnitForSpawn[] spawnUnitQueue;
+	public SkillForBattle[] commanderSkillQueue;
 	public BattleStat battleStat;
 
 	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
@@ -44,7 +46,17 @@ public class BattleManager : MonoBehaviour
 	private float battleInterval;    // intervals between from skill effect
 
 	// Use this for initialization
-	void Start()
+	private void Awake()
+	{
+		if (instance == null)
+			instance = this;
+		else if (instance != this)
+			Destroy(gameObject);
+
+		InitBattle();
+	}
+
+	void InitBattle()
 	{
 		battleStat.Init();
 		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
@@ -76,7 +88,7 @@ public class BattleManager : MonoBehaviour
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
-		for (int i = 0; i < spawnQueue.Length; i++)
+		for (int i = 0; i < spawnUnitQueue.Length; i++)
 		{
 			// spawn for FIFO, Battlecry
 			// yield return new WaitForSeconds(spawnInterval);
@@ -90,7 +102,10 @@ public class BattleManager : MonoBehaviour
 	{
 		turn = Turn.NONE;
 
+		for (int i = 0; i < commanderSkillQueue.Length; i++)
+		{
 
+		}
 	}
 
 	// unit's indivisual skill, move procedure
@@ -100,10 +115,11 @@ public class BattleManager : MonoBehaviour
 
 		// unitsInField sorted by unit's "speed" variables
 
-		for (int i = 0; i < unitsInField.Length; i++) 
+		for (int i = 0; i < liveUnitList.Length; i++) 
 		{
 			// do unit's own work
-			// yield return new WaitForSeconds(battleInterval);
+			liveUnitList[i].TurnProcess();
+			//yield return new WaitForSeconds(battleInterval);
 		}
 
 		// setting for player's turn time
