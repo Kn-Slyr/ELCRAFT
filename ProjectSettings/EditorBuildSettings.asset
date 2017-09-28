@@ -4,4 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Starter.unity
+    guid: 33cb9747cf9ec3c408976695d8f87d4f
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 164528bbaeb19d646a612fcedcd9db7c
+  - enabled: 1
+    path: Assets/Scenes/BattleForAI.unity
+    guid: 3751d13ce39e80e47b27092edd7c00ef

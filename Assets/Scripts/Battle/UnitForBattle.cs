@@ -9,7 +9,6 @@ public abstract class UnitInField : MonoBehaviour
 		
 	}
 	
-	// Update is called once per frame
 	void Update ()
 	{
 		
