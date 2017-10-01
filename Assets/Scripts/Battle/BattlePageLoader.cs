@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UnitInField : MonoBehaviour
+public class BattlePageLoader : MonoBehaviour
 {
 
-	
 	void Start ()
 	{
 		
 	}
 	
-	// Update is called once per frame
 	void Update ()
 	{
 		

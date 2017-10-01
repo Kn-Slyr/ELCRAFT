@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CommanderSkill : MonoBehaviour
+public class CommanderSkill : DragAble
 {
-	DragNDrop drag;
-
 	// Use this for initialization
 	void Start () {
 		
@@ -14,5 +12,10 @@ public abstract class CommanderSkill : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	public override void AddQueue()
+	{
+
 	}
 }

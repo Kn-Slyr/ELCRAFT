@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UnitForSpawn : MonoBehaviour
+public class UnitForSpawn : DragAble
 {
-	DragNDrop drag;
-
 	bool CanSpawn()
 	{
 		return true;
 	}
 
-	void Spawn()
+	void Spawn(int x, int y)
+	{
+
+	}
+
+	public override void AddQueue()
 	{
 
 	}
