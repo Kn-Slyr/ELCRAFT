@@ -21,6 +21,10 @@ public abstract class DragAble : MonoBehaviour
 	private void OnMouseUp()
 	{
 		nowDrag = false;
+		if(boardX != -1 && boardY != -1)
+			AddQueue();
+
+		DestroyObject(gameObject);
 	}
 
 	// return mouse position at the screen
