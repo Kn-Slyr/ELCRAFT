@@ -2,24 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class DragAble : MonoBehaviour
+public enum Kind { UNIT, SKILL };
+
+public class DragAble : MonoBehaviour
 {
-	protected int cost;
 	protected int boardX, boardY;
 	private bool nowDrag;
-	private float boardHorMin, boardHorMax;
-	private float boardVerMin, boardVerMax;
+	private const float boardHorMin = -17, boardHorMax = 17;
+	private const float boardVerMin = -5, boardVerMax = 5;
 	private float boardOneBlockSize, boardHalfBlockSize;
 
-	public abstract void AddQueue();
+	public UnitForBattle unit;
+	public SkillForBattle skill;
+	public Kind kind;
+	private BattleManager battleManager;
 
-	private void OnMouseDown()
+	public void AddQueue()
+	{
+		if(kind == Kind.SKILL)
+		{
+			skill.boardX = boardX;
+			skill.boardY = boardY;
+			battleManager.commanderSkillQueue.Add(skill);
+		}
+		else if(kind == Kind.UNIT)
+		{
+			unit.player = Player.USER;
+			unit.boardX = boardX;
+			unit.boardY = boardY;
+			battleManager.spawnUnitQueue.Add(unit);
+		}
+	}
+
+	private void Awake()
 	{
 		nowDrag = true;
+		battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		transform.position = FindMousePosition();
 	}
 
 	private void OnMouseUp()
 	{
+		Debug.Log("Mouse UP!!!"); //@@
 		nowDrag = false;
 		if(boardX != -1 && boardY != -1)
 			AddQueue();
@@ -44,16 +68,16 @@ public abstract class DragAble : MonoBehaviour
 		return ret;
 	}
 
-	bool IsInBoard(Vector3 position, out int x, out int y)
+	bool IsInBoard(Vector3 board, out int x, out int y)
 	{
-		if (position.x < boardHorMin || position.x > boardHorMax || position.y < boardVerMin || position.y > boardVerMax)
+		if (board.x < boardHorMin || board.x > boardHorMax || board.y < boardVerMin || board.y > boardVerMax)
 		{
 			x = y = -1;
 			return false;
 		}
 
-		x = (int)((position.x - boardHorMin) / boardOneBlockSize);
-		y = (int)((position.y - boardVerMin) / boardOneBlockSize);
+		x = (int)((board.x - boardHorMin) / boardOneBlockSize);
+		y = (int)((board.y - boardVerMin) / boardOneBlockSize);
 
 		return true;
 	}

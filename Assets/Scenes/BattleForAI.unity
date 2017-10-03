@@ -197,6 +197,54 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &524065632
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -16.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -5.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114350600243851818, guid: d469b6a1b40f8564899e828891e39b79,
+        type: 2}
+      propertyPath: unit
+      value: 
+      objectReference: {fileID: 1753540922758484, guid: 3ff62d9909e1d804688d0fd61747bcd8,
+        type: 2}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &931785592
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,6 +408,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1624596688}
+  - component: {fileID: 1624596689}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -380,6 +429,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1624596689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1624596687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f6264a1e0f1a24ab23399b1e48e0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turn: 0
+  liveUnitList: []
+  spawnUnitQueue: []
+  commanderSkillQueue: []
+  playerSpawnTimeLimit: 0
 --- !u!1 &1659928568
 GameObject:
   m_ObjectHideFlags: 0

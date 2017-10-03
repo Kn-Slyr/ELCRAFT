@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[SerializeField]
 public class BattleStat
 {
-	int playerMana;
-	int playerMaxMana;
-	int playerManaLevel;
-	int enemyMana;
-	int enemyMaxMana;
-	int enemyManaLevel;
+	public int userMana;
+	public int userMaxMana;
+	public int userManaLevel;
+	public int enemyMana;
+	public int enemyMaxMana;
+	public int enemyManaLevel;
 
-	int playerCoreHP;
-	int enemyCoreHP;
+	public int userCoreHP;
+	public int enemyCoreHP;
 
 	public void Init()
 	{
-		playerMana = 100;
-		playerMaxMana = 300;
-		playerManaLevel = 1;
-		playerCoreHP = 1000;
+		userMana = 100;
+		userMaxMana = 300;
+		userManaLevel = 1;
+		userCoreHP = 1000;
 
 		// @@enemy's stat will be called from db
 	}
 }
 
-public enum Turn { PLAYER, SPAWN, SKILL, PROCEDURE, NONE };
+public enum Turn { USER, SPAWN, SKILL, PROCEDURE, NONE };
 
 public class BattleManager : MonoBehaviour
 {
@@ -33,15 +34,16 @@ public class BattleManager : MonoBehaviour
 
 	public Turn turn;
 
-	public UnitForBattle[] liveUnitList;
-	public UnitForSpawn[] spawnUnitQueue;
-	public SkillForBattle[] commanderSkillQueue;
+	public List<UnitForBattle> liveUnitList;
+	public UnitForBattle[,] liveUnitListInBoard;
+	public List<UnitForBattle> spawnUnitQueue;
+	public List<SkillForBattle> commanderSkillQueue;
 	public BattleStat battleStat;
 
 	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
 	private float playerSpawnTimer;
 
-	private float spawnInteval;     // intervals between from spawn effect
+	private float spawnInterval;     // intervals between from spawn effect
 	private float skillInterval;    // intervals between from skill effect
 	private float battleInterval;    // intervals between from skill effect
 
@@ -58,6 +60,7 @@ public class BattleManager : MonoBehaviour
 
 	void InitBattle()
 	{
+		battleStat = new BattleStat();
 		battleStat.Init();
 		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
 	}
@@ -67,7 +70,7 @@ public class BattleManager : MonoBehaviour
 	{
 		if (turn == Turn.NONE)
 			return;
-		else if (turn == Turn.PLAYER)
+		else if (turn == Turn.USER)
 		{
 			if (playerSpawnTimer < Time.time)
 				turn = Turn.SPAWN;
@@ -82,16 +85,16 @@ public class BattleManager : MonoBehaviour
 
 
 	// player's + enemy's units spawn for queue
-	void UnitSpawn()
+	IEnumerator UnitSpawn()
 	{
 		turn = Turn.NONE;
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
-		for (int i = 0; i < spawnUnitQueue.Length; i++)
+		for (int i = 0; i < spawnUnitQueue.Count; i++)
 		{
 			// spawn for FIFO, Battlecry
-			// yield return new WaitForSeconds(spawnInterval);
+			yield return new WaitForSeconds(spawnInterval);
 		}
 
 		turn = Turn.SKILL;
@@ -102,7 +105,7 @@ public class BattleManager : MonoBehaviour
 	{
 		turn = Turn.NONE;
 
-		for (int i = 0; i < commanderSkillQueue.Length; i++)
+		for (int i = 0; i < commanderSkillQueue.Count; i++)
 		{
 
 		}
@@ -115,7 +118,7 @@ public class BattleManager : MonoBehaviour
 
 		// unitsInField sorted by unit's "speed" variables
 
-		for (int i = 0; i < liveUnitList.Length; i++) 
+		for (int i = 0; i < liveUnitList.Count; i++) 
 		{
 			// do unit's own work
 			liveUnitList[i].TurnProcess();
@@ -124,6 +127,18 @@ public class BattleManager : MonoBehaviour
 
 		// setting for player's turn time
 		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
-		turn = Turn.PLAYER;
+		turn = Turn.USER;
+	}
+
+	public bool InBoardSearch(int x, int y, Player who, out UnitForBattle target)
+	{
+		if (liveUnitListInBoard[x, y] != null && liveUnitListInBoard[x, y].player != who)
+		{
+			target = liveUnitListInBoard[x, y];
+			return true;
+		}
+
+		target = null;
+		return false;
 	}
 }
