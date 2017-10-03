@@ -51,12 +51,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CharacterController.cs" />
      <Compile Include="Assets\Scripts\Battle\BattleManager.cs" />
-     <Compile Include="Assets\Scripts\Battle\CommanderSkill.cs" />
-     <Compile Include="Assets\Scripts\Battle\DragNDrop.cs" />
+     <Compile Include="Assets\Scripts\Battle\BattlePageLoader.cs" />
+     <Compile Include="Assets\Scripts\Battle\DragAble.cs" />
+     <Compile Include="Assets\Scripts\Battle\SkillForBattle.cs" />
+     <Compile Include="Assets\Scripts\Battle\SkillForSpawn.cs" />
+     <Compile Include="Assets\Scripts\Battle\UnitForBattle.cs" />
      <Compile Include="Assets\Scripts\Battle\UnitForSpawn.cs" />
-     <Compile Include="Assets\Scripts\Battle\UnitInField.cs" />
+     <Compile Include="Assets\Scripts\Lobby\LobbyPageLoader.cs" />
+     <Compile Include="Assets\Scripts\Starter\StarterPageLoader.cs" />
      <Compile Include="Assets\Scripts\Test.cs" />
+     <Compile Include="Assets\Scripts\UserStatus.cs" />
+     <None Include="Assets\Prefabs\dummy.txt" />
+     <None Include="Assets\Animations\dummy.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
