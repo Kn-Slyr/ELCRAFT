@@ -8,9 +8,11 @@ public class DragAble : MonoBehaviour
 {
 	protected int boardX, boardY;
 	private bool nowDrag;
-	private const float boardHorMin = -17, boardHorMax = 17;
-	private const float boardVerMin = -5, boardVerMax = 5;
-	private float boardOneBlockSize, boardHalfBlockSize;
+
+	// this values have to be fixed for more specific finding with real images
+	private const float boardHorMin = -17.5f, boardHorMax = 17.5f;
+	private const float boardVerMin = -5.4f, boardVerMax = 5.4f;
+	private const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
 
 	public UnitForBattle unit;
 	public SkillForBattle skill;
