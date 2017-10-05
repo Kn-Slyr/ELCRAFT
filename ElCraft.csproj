@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Battle\BattleManager.cs" />
     <Compile Include="Assets\Scripts\Battle\BattlePageLoader.cs" />
+    <Compile Include="Assets\Scripts\Battle\CameraController.cs" />
     <Compile Include="Assets\Scripts\Battle\DragAble.cs" />
     <Compile Include="Assets\Scripts\Battle\DragStart.cs" />
     <Compile Include="Assets\Scripts\Battle\Fire\Gladiator.cs" />
