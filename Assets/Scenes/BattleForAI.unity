@@ -214,7 +214,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4708679188221188, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
       propertyPath: m_LocalRotation.x
@@ -251,6 +251,10 @@ Prefab:
         type: 2}
       propertyPath: m_SortingLayer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1554908259820106, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
+      propertyPath: m_TagString
+      value: ForSpawn
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d469b6a1b40f8564899e828891e39b79, type: 2}
@@ -547,7 +551,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 460412043}
-  speed: 20
+  dragSpeed: 20
+  spawnIcons: {fileID: 1305118196}
+  skillIcons: {fileID: 1822118894}
 --- !u!61 &1659928572
 BoxCollider2D:
   m_ObjectHideFlags: 0

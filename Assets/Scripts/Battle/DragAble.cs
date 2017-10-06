@@ -43,6 +43,11 @@ public class DragAble : MonoBehaviour
 		transform.position = FindMousePosition();
 	}
 
+	private void OnMouseDown()
+	{
+		Debug.Log("Mouse Down??");
+	}
+
 	private void OnMouseUp()
 	{
 		Debug.Log("Mouse UP!!!"); //@@
@@ -65,7 +70,7 @@ public class DragAble : MonoBehaviour
 
 		ret = camera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, camera.nearClipPlane));
 		ret.y *= -1;
-		ret.z = 0;
+		ret.z = -1;
 
 		return ret;
 	}
