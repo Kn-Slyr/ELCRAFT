@@ -4,17 +4,20 @@ using UnityEngine;
 
 public enum Player { USER = 1, ENEMY = -1 };
 
-public abstract class UnitForBattle : MonoBehaviour
+public abstract class UnitForBattle : MonoBehaviour, IComparer<UnitForBattle>
 {
 	private int unitCode;     // @@use enum
 	protected int skillStack;
 	protected int nowHp, maxHp;
 	protected int atk;
 	protected int shield;
+	protected int speed;
+	protected int randValue;
 	protected float damageReduce;
 	public Player player;
 	public int boardX, boardY;
 	protected BattleManager battleManager;
+	//public static Random rand = new Random();
 
 	protected virtual void Start()
 	{
@@ -32,13 +35,15 @@ public abstract class UnitForBattle : MonoBehaviour
 			MoveLogic();
 	}
 
+	public void SpawnInField()
+	{
+		// animation
+		BattleCry();
+	}
+
 	protected abstract bool MoveLogic();
 	protected abstract bool AttackLogic();
-	protected virtual void BattleCry()
-	{
-		// add live queue
-		// play animation
-	}
+	protected abstract void BattleCry();
 
 	protected virtual void DeathAttle()
 	{
@@ -83,4 +88,27 @@ public abstract class UnitForBattle : MonoBehaviour
 		return false;	
 	}
 	// public special effect
+
+	public void RandomValueSetUp()
+	{
+		randValue = Random.Range(0, 1000);
+	}
+
+	public int Compare(UnitForBattle a, UnitForBattle b)
+	{
+		if (a.speed == b.speed)
+		{
+			if (a.randValue > b.randValue)
+				return 1;
+			else if (a.randValue < b.randValue)
+				return -1;
+		}
+		else if (a.speed > b.speed)
+			return 1;
+		else if (a.speed < b.speed)
+			return -1;
+
+		return 0;
+	}
+	
 }

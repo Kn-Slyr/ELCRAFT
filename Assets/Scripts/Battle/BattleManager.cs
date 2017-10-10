@@ -43,9 +43,10 @@ public class BattleManager : MonoBehaviour
 	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
 	private float playerSpawnTimer;
 
-	private float spawnInterval;     // intervals between from spawn effect
-	private float skillInterval;    // intervals between from skill effect
-	private float battleInterval;    // intervals between from skill effect
+	private const float spawnInterval = 1f;     // intervals between from spawn effect
+	private const float skillInterval = 1f;    // intervals between from skill effect
+	private const float battleInterval = 1f;    // intervals between from skill effect
+	public float gameSpeed;
 
 	// Use this for initialization
 	private void Awake()
@@ -76,11 +77,11 @@ public class BattleManager : MonoBehaviour
 				turn = Turn.SPAWN;
 		}
 		else if (turn == Turn.SPAWN)
-			UnitSpawn();
+			StartCoroutine(UnitSpawn());
 		else if (turn == Turn.SKILL)
-			SkillProcedure();
+			StartCoroutine(SkillProcedure());
 		else if (turn == Turn.PROCEDURE)
-			BattleProcedure();
+			StartCoroutine(BattleProcedure());
 	}
 
 
@@ -93,41 +94,55 @@ public class BattleManager : MonoBehaviour
 		// spawnQueue.add(loaded enemy's queue);
 		for (int i = 0; i < spawnUnitQueue.Count; i++)
 		{
-			// spawn for FIFO, Battlecry
-			yield return new WaitForSeconds(spawnInterval);
+			spawnUnitQueue[i].SpawnInField();
+			yield return new WaitForSeconds(spawnInterval / gameSpeed);
 		}
 
+		spawnUnitQueue.Clear();
 		turn = Turn.SKILL;
 	}
 
 	// commander's skill procedure, random order for enemy and player
-	void SkillProcedure()
+	IEnumerator SkillProcedure()
 	{
 		turn = Turn.NONE;
 
 		for (int i = 0; i < commanderSkillQueue.Count; i++)
 		{
-
+			// commanderSkillQueue[i].Operate();
+			yield return new WaitForSeconds(skillInterval / gameSpeed);
 		}
+
+		commanderSkillQueue.Clear();
+		turn = Turn.PROCEDURE;
 	}
 
 	// unit's indivisual skill, move procedure
-	void BattleProcedure()
+	IEnumerator BattleProcedure()
 	{
 		turn = Turn.NONE;
 
 		// unitsInField sorted by unit's "speed" variables
+		SortLiveUnitsBySpeed();
 
 		for (int i = 0; i < liveUnitList.Count; i++) 
 		{
 			// do unit's own work
 			liveUnitList[i].TurnProcess();
-			//yield return new WaitForSeconds(battleInterval);
+			yield return new WaitForSeconds(battleInterval / gameSpeed);
 		}
 
 		// setting for player's turn time
 		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
 		turn = Turn.USER;
+	}
+
+	void SortLiveUnitsBySpeed()
+	{
+		for (int i = 0; i < liveUnitList.Count; i++)
+			liveUnitList[i].RandomValueSetUp();
+
+		liveUnitList.Sort();
 	}
 
 	public bool InBoardSearch(int x, int y, Player who, out UnitForBattle target)

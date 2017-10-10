@@ -19,16 +19,11 @@ public class DragStart : MonoBehaviour
 		{
 			Debug.Log("No mana for spawn");
 		}
-		else if(battleManager.turn == Turn.USER)
+		else if(battleManager.turn != Turn.USER)
 		{
 			Debug.Log("It's not your turn");
 		}
 		else 
 			Instantiate(unit);
-	}
-
-	private void FixedUpdate()
-	{
-		// tracking camera move
 	}
 }

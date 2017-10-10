@@ -24,6 +24,7 @@ public class DragAble : MonoBehaviour
 		Debug.Log("Place at ( " + boardX + ", " + boardY + " )");
 		if(kind == Kind.SKILL)
 		{
+
 			skill.boardX = boardX;
 			skill.boardY = boardY;
 			battleManager.commanderSkillQueue.Add(skill);
@@ -53,7 +54,7 @@ public class DragAble : MonoBehaviour
 	private void PlaceObject()
 	{
 		nowDrag = false;
-		if(boardX != -1 && boardY != -1)
+		if(battleManager.turn == Turn.USER && boardX != -1 && boardY != -1)
 			AddQueue();
 
 		DestroyObject(gameObject);
