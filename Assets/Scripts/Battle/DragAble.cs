@@ -21,6 +21,7 @@ public class DragAble : MonoBehaviour
 
 	public void AddQueue()
 	{
+		Debug.Log("Place at ( " + boardX + ", " + boardY + " )");
 		if(kind == Kind.SKILL)
 		{
 			skill.boardX = boardX;
@@ -43,14 +44,14 @@ public class DragAble : MonoBehaviour
 		transform.position = FindMousePosition();
 	}
 
-	private void OnMouseDown()
+	private void Update()
 	{
-		Debug.Log("Mouse Down??");
+		if (Input.GetMouseButtonUp(0))
+			PlaceObject();
 	}
-
-	private void OnMouseUp()
+	
+	private void PlaceObject()
 	{
-		Debug.Log("Mouse UP!!!"); //@@
 		nowDrag = false;
 		if(boardX != -1 && boardY != -1)
 			AddQueue();
@@ -89,7 +90,7 @@ public class DragAble : MonoBehaviour
 		return true;
 	}
 
-	protected virtual void FixedUpdate()
+	protected void FixedUpdate()
 	{
 		if (nowDrag)
 		{

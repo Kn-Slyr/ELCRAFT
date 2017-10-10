@@ -44,7 +44,6 @@ public class CameraController : MonoBehaviour
 
 	private void OnMouseDown()
 	{
-		Debug.Log("??");
 		nowDrag = true;
 		offset = Camera.main.ScreenToViewportPoint(Input.mousePosition);
 	}
