@@ -2,25 +2,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class DragAble : MonoBehaviour
+public enum Kind { UNIT, SKILL };
+
+public class DragAble : MonoBehaviour
 {
-	protected int cost;
 	protected int boardX, boardY;
 	private bool nowDrag;
-	private float boardHorMin, boardHorMax;
-	private float boardVerMin, boardVerMax;
-	private float boardOneBlockSize, boardHalfBlockSize;
 
-	public abstract void AddQueue();
+	// this values have to be fixed for more specific finding with real images
+	private const float boardHorMin = -17.5f, boardHorMax = 17.5f;
+	private const float boardVerMin = -5.4f, boardVerMax = 5.4f;
+	private const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
 
-	private void OnMouseDown()
+	public UnitForBattle unit;
+	public SkillForBattle skill;
+	public Kind kind;
+	private BattleManager battleManager;
+
+	public void AddQueue()
 	{
-		nowDrag = true;
+		Debug.Log("Place at ( " + boardX + ", " + boardY + " )");
+		if(kind == Kind.SKILL)
+		{
+			skill.boardX = boardX;
+			skill.boardY = boardY;
+			battleManager.commanderSkillQueue.Add(skill);
+		}
+		else if(kind == Kind.UNIT)
+		{
+			unit.player = Player.USER;
+			unit.boardX = boardX;
+			unit.boardY = boardY;
+			battleManager.spawnUnitQueue.Add(unit);
+		}
 	}
 
-	private void OnMouseUp()
+	private void Awake()
+	{
+		nowDrag = true;
+		battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		transform.position = FindMousePosition();
+	}
+
+	private void Update()
+	{
+		if (Input.GetMouseButtonUp(0))
+			PlaceObject();
+	}
+	
+	private void PlaceObject()
 	{
 		nowDrag = false;
+		if(boardX != -1 && boardY != -1)
+			AddQueue();
+
+		DestroyObject(gameObject);
 	}
 
 	// return mouse position at the screen
@@ -35,26 +71,26 @@ public abstract class DragAble : MonoBehaviour
 
 		ret = camera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, camera.nearClipPlane));
 		ret.y *= -1;
-		ret.z = 0;
+		ret.z = -1;
 
 		return ret;
 	}
 
-	bool IsInBoard(Vector3 position, out int x, out int y)
+	bool IsInBoard(Vector3 board, out int x, out int y)
 	{
-		if (position.x < boardHorMin || position.x > boardHorMax || position.y < boardVerMin || position.y > boardVerMax)
+		if (board.x < boardHorMin || board.x > boardHorMax || board.y < boardVerMin || board.y > boardVerMax)
 		{
 			x = y = -1;
 			return false;
 		}
 
-		x = (int)((position.x - boardHorMin) / boardOneBlockSize);
-		y = (int)((position.y - boardVerMin) / boardOneBlockSize);
+		x = (int)((board.x - boardHorMin) / boardOneBlockSize);
+		y = (int)((board.y - boardVerMin) / boardOneBlockSize);
 
 		return true;
 	}
 
-	protected virtual void FixedUpdate()
+	protected void FixedUpdate()
 	{
 		if (nowDrag)
 		{

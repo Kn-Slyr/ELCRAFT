@@ -4,16 +4,7 @@ using UnityEngine;
 
 public abstract class SkillForBattle : MonoBehaviour
 {
-	public int positionX
-	{
-		get { return positionX; }
-		set { positionX = value; }
-	}
-	public int positionY
-	{
-		get { return positionY; }
-		set { positionY = value; }
-	}
+	public int boardX, boardY;
 
 	// Use this for initialization
 	void Start () {
