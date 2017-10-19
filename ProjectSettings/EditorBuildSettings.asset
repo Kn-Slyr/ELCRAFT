@@ -14,3 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BattleForAI.unity
     guid: 3751d13ce39e80e47b27092edd7c00ef
+  - enabled: 1
+    path: Assets/Scenes/History.unity
+    guid: afba08969b7b6214b84eb8ba0e6213d2
+  - enabled: 1
+    path: Assets/Scenes/Scenario.unity
+    guid: 5da8da80a0107b549b31a33babe7baca
+  - enabled: 1
+    path: Assets/Scenes/Colloseum.unity
+    guid: e75867a79727d624e96bab4754347148
+  - enabled: 1
+    path: Assets/Scenes/ManageBarrack.unity
+    guid: 5ada3fd5f86287d4aa9181c1959b2d28
+  - enabled: 1
+    path: Assets/Scenes/ManageCommander.unity
+    guid: cc2feaa994e9cae4cab5612f1935fec1
