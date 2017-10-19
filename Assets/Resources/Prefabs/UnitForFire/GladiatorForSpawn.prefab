@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114350600243851818}
   - component: {fileID: 61843078065860818}
   m_Layer: 0
-  m_Name: FireGladiatorForSpawn
+  m_Name: GladiatorForSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

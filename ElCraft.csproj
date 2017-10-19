@@ -78,21 +78,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\CharacterController.cs" />
     <Compile Include="Assets\Scripts\Battle\BattleManager.cs" />
     <Compile Include="Assets\Scripts\Battle\BattlePageLoader.cs" />
     <Compile Include="Assets\Scripts\Battle\CameraController.cs" />
     <Compile Include="Assets\Scripts\Battle\DragAble.cs" />
     <Compile Include="Assets\Scripts\Battle\DragStart.cs" />
-    <Compile Include="Assets\Scripts\Battle\Fire\Gladiator.cs" />
+    <Compile Include="Assets\Scripts\Battle\Fire\GladiatorForBattle.cs" />
+    <Compile Include="Assets\Scripts\Battle\Fire\GladiatorForSpawn.cs" />
     <Compile Include="Assets\Scripts\Battle\SkillForBattle.cs" />
     <Compile Include="Assets\Scripts\Battle\UnitForBattle.cs" />
+    <Compile Include="Assets\Scripts\Battle\UnitForSpawn.cs" />
+    <Compile Include="Assets\Scripts\Lobby\LobbyPageLoader.cs" />
     <Compile Include="Assets\Scripts\Starter\StarterPageLoader.cs" />
     <Compile Include="Assets\Scripts\Test.cs" />
     <Compile Include="Assets\Scripts\UserStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Animations\dummy.txt" />
-    <None Include="Assets\Prefabs\dummy.txt" />
+    <None Include="Assets\Resources\Prefabs\dummy.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

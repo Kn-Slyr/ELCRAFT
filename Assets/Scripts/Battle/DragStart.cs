@@ -6,11 +6,11 @@ public class DragStart : MonoBehaviour
 {
 	public int cost;
 	public GameObject unit;
-	private BattleManager battleManager;
+	private BattleManager battleManager = BattleManager.instance;
 
 	void Start ()
 	{
-		battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		battleManager = BattleManager.instance;	// it have to be deleted
 	}
 
 	private void OnMouseDown()

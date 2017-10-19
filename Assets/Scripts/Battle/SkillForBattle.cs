@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class SkillForBattle : MonoBehaviour
+public abstract class SkillForBattle : DragAble
 {
-	public int boardX, boardY;
+	protected int leftTurn;
+	protected int manaCost;
 
-	// Use this for initialization
-	void Start () {
-		
+	protected override void AddQueue()
+	{
+		if (CheckCondition())
+		{
+			player = Player.USER;
+			battleManager.battleStat.userMana -= manaCost;
+			battleManager.commanderSkillQueue.Add(this);
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+	protected abstract void SkillProcess();
 }

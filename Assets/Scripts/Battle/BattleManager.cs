@@ -26,19 +26,28 @@ public class BattleStat
 	}
 }
 
-public enum Turn { USER, SPAWN, SKILL, PROCEDURE, NONE };
+public class BoardInfo
+{
+	public const float boardHorMin = -17.5f, boardHorMax = 17.5f;
+	public const float boardVerMin = -5.4f, boardVerMax = 5.4f;
+	public const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
+}
+
+public enum Turn { USER, SPAWN, SPAWNING, SKILL, SKILLING, PROCESS, PROCESSING, NONE };
 
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance = null;
 
-	public Turn turn;
+	public Turn turn = Turn.USER;
+	public int turnCount = 0;
 
-	public List<UnitForBattle> liveUnitList;
-	public UnitForBattle[,] liveUnitListInBoard;
-	public List<UnitForBattle> spawnUnitQueue;
-	public List<SkillForBattle> commanderSkillQueue;
+	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
+	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
+	public List<UnitForSpawn> spawnUnitQueue = new List<UnitForSpawn>();
+	public List<SkillForBattle> commanderSkillQueue = new List<SkillForBattle>();
 	public BattleStat battleStat;
+	private int uniqueUnitNumber = 0;
 
 	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
 	private float playerSpawnTimer;
@@ -61,9 +70,10 @@ public class BattleManager : MonoBehaviour
 
 	void InitBattle()
 	{
+		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
+
 		battleStat = new BattleStat();
 		battleStat.Init();
-		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
 	}
 
 	// Update is called once per frame
@@ -80,7 +90,7 @@ public class BattleManager : MonoBehaviour
 			StartCoroutine(UnitSpawn());
 		else if (turn == Turn.SKILL)
 			StartCoroutine(SkillProcedure());
-		else if (turn == Turn.PROCEDURE)
+		else if (turn == Turn.PROCESS)
 			StartCoroutine(BattleProcedure());
 	}
 
@@ -88,13 +98,15 @@ public class BattleManager : MonoBehaviour
 	// player's + enemy's units spawn for queue
 	IEnumerator UnitSpawn()
 	{
-		turn = Turn.NONE;
+		Debug.Log(turnCount + " Spawn Phase!");
+		turn = Turn.SPAWNING;
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
-		for (int i = 0; i < spawnUnitQueue.Count; i++)
+		yield return new WaitForSeconds(spawnInterval / gameSpeed);
+		foreach (UnitForSpawn spawnUnit in spawnUnitQueue)
 		{
-			spawnUnitQueue[i].SpawnInField();
+			spawnUnit.SpawnInField();
 			yield return new WaitForSeconds(spawnInterval / gameSpeed);
 		}
 
@@ -105,8 +117,10 @@ public class BattleManager : MonoBehaviour
 	// commander's skill procedure, random order for enemy and player
 	IEnumerator SkillProcedure()
 	{
-		turn = Turn.NONE;
+		Debug.Log(turnCount + " Skill Phase!");
+		turn = Turn.SKILLING;
 
+		yield return new WaitForSeconds(skillInterval / gameSpeed);
 		for (int i = 0; i < commanderSkillQueue.Count; i++)
 		{
 			// commanderSkillQueue[i].Operate();
@@ -114,46 +128,81 @@ public class BattleManager : MonoBehaviour
 		}
 
 		commanderSkillQueue.Clear();
-		turn = Turn.PROCEDURE;
+		turn = Turn.PROCESS;
 	}
 
 	// unit's indivisual skill, move procedure
 	IEnumerator BattleProcedure()
 	{
-		turn = Turn.NONE;
-
+		Debug.Log(turnCount + " Battle Phase!");
+		turn = Turn.PROCESSING;
 		// unitsInField sorted by unit's "speed" variables
-		SortLiveUnitsBySpeed();
+		SetUnitRandValue();
+		SortLiveUnitsBySpeed();	//@@@@whyyyyyyyyyyyyy
 
-		for (int i = 0; i < liveUnitList.Count; i++) 
+		yield return new WaitForSeconds(battleInterval / gameSpeed);
+		
+		foreach (UnitForBattle unit in liveUnitList)
 		{
 			// do unit's own work
-			liveUnitList[i].TurnProcess();
+			unit.TurnProcess();
 			yield return new WaitForSeconds(battleInterval / gameSpeed);
 		}
 
 		// setting for player's turn time
 		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
 		turn = Turn.USER;
+		turnCount++;
+	}
+
+	void SetUnitRandValue()
+	{
+		foreach (UnitForBattle unit in liveUnitList)
+			unit.SetRandomValue();
 	}
 
 	void SortLiveUnitsBySpeed()
 	{
-		for (int i = 0; i < liveUnitList.Count; i++)
-			liveUnitList[i].RandomValueSetUp();
+		liveUnitList.Sort(delegate(UnitForBattle a, UnitForBattle b)
+		{
+			if (a.GetSpeed() == b.GetSpeed())
+			{
+				if (a.GetRandValue() > b.GetRandValue())
+					return 1;
+				else if (a.GetRandValue() < b.GetRandValue())
+					return -1;
+			}
+			else if (a.GetSpeed() > b.GetSpeed())
+				return 1;
+			else if (a.GetSpeed() < b.GetSpeed())
+				return -1;
 
-		liveUnitList.Sort();
+			return 0;
+		});
 	}
 
-	public bool InBoardSearch(int x, int y, Player who, out UnitForBattle target)
+	public bool SearchInBoard(int x, int y, Player me, ref UnitForBattle target)
 	{
-		if (liveUnitListInBoard[x, y] != null && liveUnitListInBoard[x, y].player != who)
+		Debug.Log("search and destroy!!");
+		if (x < 0 || x > 15 || y < 0 || y > 4)
+			return false;
+
+		if (liveUnitListInBoard[x, y] && liveUnitListInBoard[x, y].player != me)
 		{
 			target = liveUnitListInBoard[x, y];
 			return true;
 		}
 
-		target = null;
 		return false;
+	}
+
+	public bool IsEmptyInBoard(int x, int y)
+	{
+		return liveUnitListInBoard[x, y] == null;
+	}
+
+	public int GetUnitNumber()
+	{
+		return uniqueUnitNumber++;
 	}
 }

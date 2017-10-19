@@ -2,48 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Player { USER = 1, ENEMY = -1 };
+public enum Player : int { USER = 1, ENEMY = -1 };
 
-public abstract class UnitForBattle : MonoBehaviour, IComparer<UnitForBattle>
+public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.IComparable
 {
 	private int unitCode;     // @@use enum
+	public int unitNumber;
 	protected int skillStack;
 	protected int nowHp, maxHp;
 	protected int atk;
 	protected int shield;
 	protected int speed;
-	protected int randValue;
+	public int randValue;
 	protected float damageReduce;
 	public Player player;
 	public int boardX, boardY;
-	protected BattleManager battleManager;
-	//public static Random rand = new Random();
+	private BattleManager battleManager = BattleManager.instance;
 
-	protected virtual void Start()
+	public int GetSpeed() { return speed; }
+	public int GetRandValue() { return randValue; }
+	public string GetName() { return gameObject.name + "(" + unitNumber + ")"; }
+
+	protected virtual void Awake()
 	{
-		// is this good? or i have to public and add by inspector?
-		battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();	
 		skillStack = 0;
+		unitNumber = battleManager.GetUnitNumber();
 		nowHp = maxHp;
 		shield = maxHp / 5;
 		// one turn shield for 20% of max hp
+		SetPosition();
+
+		battleManager.liveUnitList.Add(this.GetComponent<UnitForBattle>());
 	}
 
 	public void TurnProcess()
 	{
+		Debug.Log(GetName() + "\'s turn process");
 		if (!AttackLogic())
 			MoveLogic();
 	}
 
-	public void SpawnInField()
-	{
-		// animation
-		BattleCry();
-	}
-
 	protected abstract bool MoveLogic();
 	protected abstract bool AttackLogic();
-	protected abstract void BattleCry();
 
 	protected virtual void DeathAttle()
 	{
@@ -89,26 +89,19 @@ public abstract class UnitForBattle : MonoBehaviour, IComparer<UnitForBattle>
 	}
 	// public special effect
 
-	public void RandomValueSetUp()
+	public void SetRandomValue()
 	{
 		randValue = Random.Range(0, 1000);
 	}
 
-	public int Compare(UnitForBattle a, UnitForBattle b)
+	private void SetPosition()
 	{
-		if (a.speed == b.speed)
-		{
-			if (a.randValue > b.randValue)
-				return 1;
-			else if (a.randValue < b.randValue)
-				return -1;
-		}
-		else if (a.speed > b.speed)
-			return 1;
-		else if (a.speed < b.speed)
-			return -1;
+		Vector3 position = new Vector3();
+		position.x = BoardInfo.boardHorMin + BoardInfo.boardOneBlockSize * boardX + BoardInfo.boardHalfBlockSize;
+		position.y = BoardInfo.boardVerMin + BoardInfo.boardOneBlockSize * boardY + BoardInfo.boardHalfBlockSize;
+		position.z = -1;
 
-		return 0;
+		transform.position = position;
+		battleManager.liveUnitListInBoard[boardX, boardY] = this.GetComponent<UnitForBattle>();
 	}
-	
 }
