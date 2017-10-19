@@ -6,11 +6,11 @@ public class DragStart : MonoBehaviour
 {
 	public int cost;
 	public GameObject unit;
-	private BattleManager battleManager;
+	private BattleManager battleManager = BattleManager.instance;
 
 	void Start ()
 	{
-		battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		battleManager = BattleManager.instance;	// it have to be deleted
 	}
 
 	private void OnMouseDown()
@@ -19,7 +19,7 @@ public class DragStart : MonoBehaviour
 		{
 			Debug.Log("No mana for spawn");
 		}
-		else if(battleManager.turn != Turn.USER)
+		else if(battleManager.turn != Turn.PLAY_ING)
 		{
 			Debug.Log("It's not your turn");
 		}

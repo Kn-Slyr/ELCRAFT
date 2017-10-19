@@ -26,28 +26,35 @@ public class BattleStat
 	}
 }
 
-public enum Turn { USER, SPAWN, SKILL, PROCEDURE, NONE };
+public class BoardInfo
+{
+	public const float boardHorMin = -17.5f, boardHorMax = 17.5f;
+	public const float boardVerMin = -5.4f, boardVerMax = 5.4f;
+	public const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
+}
+
+public enum Turn { NONE, PLAY, PLAY_ING, SPAWN, SPAWN_ING, SKILL, SKILL_ING, PROCESS, PROCESS_ING };
 
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance = null;
 
 	public Turn turn;
+	public int turnCount = 0;
 
-	public List<UnitForBattle> liveUnitList;
-	public UnitForBattle[,] liveUnitListInBoard;
-	public List<UnitForBattle> spawnUnitQueue;
-	public List<SkillForBattle> commanderSkillQueue;
+	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
+	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
+	public List<UnitForSpawn> spawnUnitQueue = new List<UnitForSpawn>();
+	public List<SkillForBattle> commanderSkillQueue = new List<SkillForBattle>();
 	public BattleStat battleStat;
+	private int uniqueUnitNumber = 0;
 
-	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
-	private float playerSpawnTimer;
-
-	private const float spawnInterval = 1f;     // intervals between from spawn effect
+	private const float playerSpawnTimeLimit = 5f;   // not specfied, maybe 5s
+	private const float spawnInterval = 0.5f;     // intervals between from spawn effect
 	private const float skillInterval = 1f;    // intervals between from skill effect
 	private const float battleInterval = 1f;    // intervals between from skill effect
 	public float gameSpeed;
-
+	
 	// Use this for initialization
 	private void Awake()
 	{
@@ -63,38 +70,53 @@ public class BattleManager : MonoBehaviour
 	{
 		battleStat = new BattleStat();
 		battleStat.Init();
-		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
+		turn = Turn.PLAY;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (turn == Turn.NONE)
-			return;
-		else if (turn == Turn.USER)
+		switch(turn)
 		{
-			if (playerSpawnTimer < Time.time)
-				turn = Turn.SPAWN;
+			case Turn.PLAY:
+				StartCoroutine(UserPlay());
+				break;
+			case Turn.SPAWN:
+				StartCoroutine(UnitSpawn());
+				break;
+			case Turn.SKILL:
+				StartCoroutine(SkillProcedure());
+				break;
+			case Turn.PROCESS:
+				StartCoroutine(BattleProcedure());
+				break;
+			default:
+				break;
 		}
-		else if (turn == Turn.SPAWN)
-			StartCoroutine(UnitSpawn());
-		else if (turn == Turn.SKILL)
-			StartCoroutine(SkillProcedure());
-		else if (turn == Turn.PROCEDURE)
-			StartCoroutine(BattleProcedure());
 	}
 
+	IEnumerator UserPlay()
+	{
+		// animation
+		Debug.Log(turnCount + " User Phase!");
+
+		turn = Turn.PLAY_ING;
+		yield return new WaitForSeconds(playerSpawnTimeLimit);
+		turn = Turn.SPAWN;
+	}
 
 	// player's + enemy's units spawn for queue
 	IEnumerator UnitSpawn()
 	{
-		turn = Turn.NONE;
+		Debug.Log(turnCount + " Spawn Phase!");
+		turn = Turn.SPAWN_ING;
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
-		for (int i = 0; i < spawnUnitQueue.Count; i++)
+		yield return new WaitForSeconds(spawnInterval / gameSpeed);
+		foreach (UnitForSpawn spawnUnit in spawnUnitQueue)
 		{
-			spawnUnitQueue[i].SpawnInField();
+			spawnUnit.SpawnInField();
 			yield return new WaitForSeconds(spawnInterval / gameSpeed);
 		}
 
@@ -105,8 +127,10 @@ public class BattleManager : MonoBehaviour
 	// commander's skill procedure, random order for enemy and player
 	IEnumerator SkillProcedure()
 	{
-		turn = Turn.NONE;
+		Debug.Log(turnCount + " Skill Phase!");
+		turn = Turn.SKILL_ING;
 
+		yield return new WaitForSeconds(skillInterval / gameSpeed);
 		for (int i = 0; i < commanderSkillQueue.Count; i++)
 		{
 			// commanderSkillQueue[i].Operate();
@@ -114,46 +138,78 @@ public class BattleManager : MonoBehaviour
 		}
 
 		commanderSkillQueue.Clear();
-		turn = Turn.PROCEDURE;
+		turn = Turn.PROCESS;
 	}
 
 	// unit's indivisual skill, move procedure
 	IEnumerator BattleProcedure()
 	{
-		turn = Turn.NONE;
-
+		Debug.Log(turnCount + " Battle Phase!");
+		turn = Turn.PROCESS_ING;
 		// unitsInField sorted by unit's "speed" variables
-		SortLiveUnitsBySpeed();
+		SetUnitRandValue();
+		SortLiveUnitsBySpeed();	
 
-		for (int i = 0; i < liveUnitList.Count; i++) 
+		yield return new WaitForSeconds(battleInterval / gameSpeed);
+		
+		foreach (UnitForBattle unit in liveUnitList)
 		{
 			// do unit's own work
-			liveUnitList[i].TurnProcess();
+			unit.TurnProcess();
 			yield return new WaitForSeconds(battleInterval / gameSpeed);
 		}
 
-		// setting for player's turn time
-		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
-		turn = Turn.USER;
+		turn = Turn.PLAY;
+		turnCount++;
+	}
+
+	void SetUnitRandValue()
+	{
+		foreach (UnitForBattle unit in liveUnitList)
+			unit.SetRandomValue();
 	}
 
 	void SortLiveUnitsBySpeed()
 	{
-		for (int i = 0; i < liveUnitList.Count; i++)
-			liveUnitList[i].RandomValueSetUp();
+		liveUnitList.Sort(delegate(UnitForBattle a, UnitForBattle b)
+		{
+			if (a.GetSpeed() == b.GetSpeed())
+			{
+				if (a.GetRandValue() > b.GetRandValue())
+					return 1;
+				else if (a.GetRandValue() < b.GetRandValue())
+					return -1;
+			}
+			else if (a.GetSpeed() > b.GetSpeed())
+				return 1;
+			else if (a.GetSpeed() < b.GetSpeed())
+				return -1;
 
-		liveUnitList.Sort();
+			return 0;
+		});
 	}
 
-	public bool InBoardSearch(int x, int y, Player who, out UnitForBattle target)
+	public bool SearchInBoard(int x, int y, Player me, ref UnitForBattle target)
 	{
-		if (liveUnitListInBoard[x, y] != null && liveUnitListInBoard[x, y].player != who)
+		if (x < 0 || x > 15 || y < 0 || y > 4)
+			return false;
+
+		if (liveUnitListInBoard[x, y] && liveUnitListInBoard[x, y].player != me)
 		{
 			target = liveUnitListInBoard[x, y];
 			return true;
 		}
 
-		target = null;
 		return false;
+	}
+
+	public bool IsEmptyInBoard(int x, int y)
+	{
+		return liveUnitListInBoard[x, y] == null;
+	}
+
+	public int GetUnitNumber()
+	{
+		return uniqueUnitNumber++;
 	}
 }
