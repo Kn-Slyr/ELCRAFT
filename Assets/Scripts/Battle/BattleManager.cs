@@ -33,13 +33,13 @@ public class BoardInfo
 	public const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
 }
 
-public enum Turn { USER, SPAWN, SPAWNING, SKILL, SKILLING, PROCESS, PROCESSING, NONE };
+public enum Turn { NONE, PLAY, PLAY_ING, SPAWN, SPAWN_ING, SKILL, SKILL_ING, PROCESS, PROCESS_ING };
 
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance = null;
 
-	public Turn turn = Turn.USER;
+	public Turn turn;
 	public int turnCount = 0;
 
 	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
@@ -49,14 +49,12 @@ public class BattleManager : MonoBehaviour
 	public BattleStat battleStat;
 	private int uniqueUnitNumber = 0;
 
-	public float playerSpawnTimeLimit;   // not specfied, maybe 5s
-	private float playerSpawnTimer;
-
-	private const float spawnInterval = 1f;     // intervals between from spawn effect
+	private const float playerSpawnTimeLimit = 5f;   // not specfied, maybe 5s
+	private const float spawnInterval = 0.5f;     // intervals between from spawn effect
 	private const float skillInterval = 1f;    // intervals between from skill effect
 	private const float battleInterval = 1f;    // intervals between from skill effect
 	public float gameSpeed;
-
+	
 	// Use this for initialization
 	private void Awake()
 	{
@@ -70,36 +68,48 @@ public class BattleManager : MonoBehaviour
 
 	void InitBattle()
 	{
-		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
-
 		battleStat = new BattleStat();
 		battleStat.Init();
+		turn = Turn.PLAY;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (turn == Turn.NONE)
-			return;
-		else if (turn == Turn.USER)
+		switch(turn)
 		{
-			if (playerSpawnTimer < Time.time)
-				turn = Turn.SPAWN;
+			case Turn.PLAY:
+				StartCoroutine(UserPlay());
+				break;
+			case Turn.SPAWN:
+				StartCoroutine(UnitSpawn());
+				break;
+			case Turn.SKILL:
+				StartCoroutine(SkillProcedure());
+				break;
+			case Turn.PROCESS:
+				StartCoroutine(BattleProcedure());
+				break;
+			default:
+				break;
 		}
-		else if (turn == Turn.SPAWN)
-			StartCoroutine(UnitSpawn());
-		else if (turn == Turn.SKILL)
-			StartCoroutine(SkillProcedure());
-		else if (turn == Turn.PROCESS)
-			StartCoroutine(BattleProcedure());
 	}
 
+	IEnumerator UserPlay()
+	{
+		// animation
+		Debug.Log(turnCount + " User Phase!");
+
+		turn = Turn.PLAY_ING;
+		yield return new WaitForSeconds(playerSpawnTimeLimit);
+		turn = Turn.SPAWN;
+	}
 
 	// player's + enemy's units spawn for queue
 	IEnumerator UnitSpawn()
 	{
 		Debug.Log(turnCount + " Spawn Phase!");
-		turn = Turn.SPAWNING;
+		turn = Turn.SPAWN_ING;
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
@@ -118,7 +128,7 @@ public class BattleManager : MonoBehaviour
 	IEnumerator SkillProcedure()
 	{
 		Debug.Log(turnCount + " Skill Phase!");
-		turn = Turn.SKILLING;
+		turn = Turn.SKILL_ING;
 
 		yield return new WaitForSeconds(skillInterval / gameSpeed);
 		for (int i = 0; i < commanderSkillQueue.Count; i++)
@@ -135,10 +145,10 @@ public class BattleManager : MonoBehaviour
 	IEnumerator BattleProcedure()
 	{
 		Debug.Log(turnCount + " Battle Phase!");
-		turn = Turn.PROCESSING;
+		turn = Turn.PROCESS_ING;
 		// unitsInField sorted by unit's "speed" variables
 		SetUnitRandValue();
-		SortLiveUnitsBySpeed();	//@@@@whyyyyyyyyyyyyy
+		SortLiveUnitsBySpeed();	
 
 		yield return new WaitForSeconds(battleInterval / gameSpeed);
 		
@@ -149,9 +159,7 @@ public class BattleManager : MonoBehaviour
 			yield return new WaitForSeconds(battleInterval / gameSpeed);
 		}
 
-		// setting for player's turn time
-		playerSpawnTimer = Time.time + playerSpawnTimeLimit;
-		turn = Turn.USER;
+		turn = Turn.PLAY;
 		turnCount++;
 	}
 
@@ -183,7 +191,6 @@ public class BattleManager : MonoBehaviour
 
 	public bool SearchInBoard(int x, int y, Player me, ref UnitForBattle target)
 	{
-		Debug.Log("search and destroy!!");
 		if (x < 0 || x > 15 || y < 0 || y > 4)
 			return false;
 

@@ -9,29 +9,38 @@ public class GladiatorForBattle : UnitForBattle
 		//unit stat load
 		maxHp = 123;
 		atk = 10;
+		moveRange = 2;
 
 		base.Awake();
 	}
 
-	protected override bool MoveLogic()
-	{		
-		return false;
-	}
+	// It's implement for only special moving
+	//protected override void MoveLogic()
+	//{
+	//	Debug.Log(GetName() + " Move!");
+	//	// simple moving, have to change
+	//	RemovePosition();
+
+	//	int count = 0;
+	//	while (count < 2 && battleManager.IsEmptyInBoard((int)player + boardX, boardY)) 
+	//	{
+	//		count++;
+	//		boardX = (int)player + boardX;
+	//	}
+
+	//	SetPosition();
+	//}
 
 	protected override bool AttackLogic()
 	{
-		//if (battleManager)
-		//	Debug.Log("null");
-		//else
-		//	Debug.Log("not null");
-
-		//Debug.Log(boardX + ", " + boardY + ", " + player);
-		//if (battleManager.SearchInBoard(boardX + (int)player, boardY, player)) 
-		//{
-		//	//target.TakeDamage(atk);
-		//	// play attack animation
-		//	return true;
-		//}
+		UnitForBattle target = null;
+		if (battleManager.SearchInBoard((int)player + boardX, boardY, player, ref target))
+		{
+			Debug.Log(GetName() + " Attack!");
+			target.TakeDamage(atk);
+			// play attack animation
+			return true;
+		}
 
 		return false;
 	}

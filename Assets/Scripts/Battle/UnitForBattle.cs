@@ -13,11 +13,12 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 	protected int atk;
 	protected int shield;
 	protected int speed;
+	protected int moveRange;
 	public int randValue;
 	protected float damageReduce;
 	public Player player;
 	public int boardX, boardY;
-	private BattleManager battleManager = BattleManager.instance;
+	protected BattleManager battleManager = BattleManager.instance;
 
 	public int GetSpeed() { return speed; }
 	public int GetRandValue() { return randValue; }
@@ -42,7 +43,23 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 			MoveLogic();
 	}
 
-	protected abstract bool MoveLogic();
+	// If unit has special move logic, it will implement with override
+	protected virtual void MoveLogic()
+	{
+		Debug.Log(GetName() + " Normal Move!");
+		// simple moving, have to change
+		RemovePosition();
+
+		int count = 0;
+		while (count < moveRange && battleManager.IsEmptyInBoard((int)player + boardX, boardY))
+		{
+			count++;
+			boardX = (int)player + boardX;
+		}
+
+		SetPosition();
+	}
+
 	protected abstract bool AttackLogic();
 
 	protected virtual void DeathAttle()
@@ -94,7 +111,11 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 		randValue = Random.Range(0, 1000);
 	}
 
-	private void SetPosition()
+	protected void RemovePosition()
+	{
+		battleManager.liveUnitListInBoard[boardX, boardY] = null;
+	}
+	protected void SetPosition()
 	{
 		Vector3 position = new Vector3();
 		position.x = BoardInfo.boardHorMin + BoardInfo.boardOneBlockSize * boardX + BoardInfo.boardHalfBlockSize;

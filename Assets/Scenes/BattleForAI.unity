@@ -461,10 +461,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turn: 0
+  turnCount: 0
   liveUnitList: []
   spawnUnitQueue: []
   commanderSkillQueue: []
-  playerSpawnTimeLimit: 5
   gameSpeed: 1
 --- !u!1 &1659928568
 GameObject:

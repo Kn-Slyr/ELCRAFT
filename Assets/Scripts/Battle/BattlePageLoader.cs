@@ -7,7 +7,7 @@ public class BattlePageLoader : MonoBehaviour
 
 	void Start ()
 	{
-		
+		BattleManager.instance.turn = Turn.PLAY;
 	}
 	
 	void Update ()
