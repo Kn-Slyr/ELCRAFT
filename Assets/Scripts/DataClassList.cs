@@ -5,22 +5,31 @@ using System.Collections.Generic;
 [Serializable]
 public struct StageData
 {
-	List<UnitSpawnData> doList;
+	List<ActionData> doList;
 }
 
-[Serializable]
-public struct UnitSpawnData
+public enum ActionCode : int
 {
-	int turn;
-	int unitCode;
-	int boardX, boardY;
-}
+	NONE = 0, 
+	LEVEL = 1,
+	FireGladiator = 101
+};
 
 [Serializable]
-public struct CommanderSkillData
+public struct ActionData
 {
-	int turn;
-	int skillCode;
-	int boardX, boardY;		// it is better for target unit?
+	[NonSerialized] public static readonly int UnitStart = 100;     // unit code will be start from 101~ 
+	[NonSerialized] public static readonly int SkillStart = 10;		// skill code will be start from 10~ 99
+	public int turn;
+	public int actionCode;
+	public int boardX, boardY;
+
+	public ActionData(int _turn, int _actionCode, int _boardX, int _boardY)
+	{
+		turn = _turn;
+		actionCode = _actionCode;
+		boardX = _boardX;
+		boardY = _boardY;
+	}
 }
 

@@ -6,7 +6,7 @@ public enum Player : int { USER = 1, ENEMY = -1 };
 
 public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.IComparable
 {
-	private int unitCode;     // @@use enum
+	public ActionCode actionCode;
 	public int unitNumber;
 	protected int skillStack;
 	protected int nowHp, maxHp;
@@ -29,11 +29,22 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 		skillStack = 0;
 		unitNumber = battleManager.GetUnitNumber();
 		nowHp = maxHp;
-		shield = maxHp / 5;
 		// one turn shield for 20% of max hp
 		SetPosition();
 
 		battleManager.liveUnitList.Add(this.GetComponent<UnitForBattle>());
+	}
+
+	public virtual void SpawnInField()
+	{
+		// animation
+		BattleCry();
+	}
+
+	public virtual void BattleCry()
+	{
+		// ex) shield buff
+		// shield = maxHp / 5;
 	}
 
 	public void TurnProcess()

@@ -34,17 +34,19 @@ public class BoardInfo
 }
 
 public enum Turn { NONE, PLAY, PLAY_ING, SPAWN, SPAWN_ING, SKILL, SKILL_ING, PROCESS, PROCESS_ING };
+public enum Mode { AI, PVP, MAKER }
 
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance = null;
 
+	public Mode mode;
 	public Turn turn;
 	public int turnCount = 0;
 
 	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
 	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
-	public List<UnitForSpawn> spawnUnitQueue = new List<UnitForSpawn>();
+	public List<UnitForBattle> spawnUnitQueue = new List<UnitForBattle>();
 	public List<SkillForBattle> commanderSkillQueue = new List<SkillForBattle>();
 	public BattleStat battleStat;
 	private int uniqueUnitNumber = 0;
@@ -54,6 +56,8 @@ public class BattleManager : MonoBehaviour
 	private const float skillInterval = 1f;    // intervals between from skill effect
 	private const float battleInterval = 1f;    // intervals between from skill effect
 	public float gameSpeed;
+
+	public AIMaker aiMaker;
 	
 	// Use this for initialization
 	private void Awake()
@@ -102,7 +106,23 @@ public class BattleManager : MonoBehaviour
 
 		turn = Turn.PLAY_ING;
 		yield return new WaitForSeconds(playerSpawnTimeLimit);
+
 		turn = Turn.SPAWN;
+
+		// if pvp, data to server
+		// else if ai maker, save the values
+		if (mode != Mode.AI)
+		{
+			List<ActionData> doList = new List<ActionData>();
+			foreach (UnitForBattle spawnUnit in spawnUnitQueue)
+				doList.Add(new ActionData(turnCount, (int)spawnUnit.actionCode, spawnUnit.boardX, spawnUnit.boardY));
+
+			if (mode == Mode.PVP)
+				;
+			else if (mode == Mode.MAKER)
+				aiMaker.AddActionList(doList);
+			
+		}
 	}
 
 	// player's + enemy's units spawn for queue
@@ -114,7 +134,7 @@ public class BattleManager : MonoBehaviour
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
 		yield return new WaitForSeconds(spawnInterval / gameSpeed);
-		foreach (UnitForSpawn spawnUnit in spawnUnitQueue)
+		foreach (UnitForBattle spawnUnit in spawnUnitQueue)
 		{
 			spawnUnit.SpawnInField();
 			yield return new WaitForSeconds(spawnInterval / gameSpeed);

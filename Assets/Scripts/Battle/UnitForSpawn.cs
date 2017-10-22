@@ -19,12 +19,11 @@ public class UnitForSpawn : DragAble
 		if(CheckCondition())
 		{
 			battleManager.battleStat.userMana -= manaCost;
-			battleManager.spawnUnitQueue.Add(this);
-
+			
 			SetUnitData();
 			Instantiate(unitForBattle);
+			battleManager.spawnUnitQueue.Add(unitForBattle.GetComponent<UnitForBattle>());
 			// alpha to 50%
-			Debug.Log("AddQueue : (" + boardX + ", " + boardY + ")");
 		}
 	}
 
@@ -41,17 +40,5 @@ public class UnitForSpawn : DragAble
 			return false;
 		}
 		return true;
-	}
-
-	public void SpawnInField()
-	{
-		// spawn animation, alpha to 100%
-		BattleCry();	// abstract method
-	}
-
-	// None for normal units
-	protected virtual void BattleCry()
-	{
-
 	}
 }

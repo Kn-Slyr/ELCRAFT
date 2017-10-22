@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class DataManager
 {
-	string basicPath = Application.dataPath + "/Datas/";
-
 	public void BinarySave<T>(T target, string filePath)
 	{
 		BinaryFormatter formatter = new BinaryFormatter();
-		FileStream stream = new FileStream(basicPath + filePath, FileMode.Create);
+		FileStream stream = new FileStream(Application.dataPath + "/Datas/" + filePath, FileMode.Create);
 
 		formatter.Serialize(stream, target);
 		stream.Close();
@@ -18,7 +16,7 @@ public class DataManager
 	public T BinaryLoad<T>(string filePath)
 	{
 		BinaryFormatter formatter = new BinaryFormatter();
-		FileStream stream = new FileStream(filePath, FileMode.Open);
+		FileStream stream = new FileStream(Application.dataPath + "/Datas/" + filePath, FileMode.Open);
 		T target = (T)formatter.Deserialize(stream);
 		stream.Close();
 

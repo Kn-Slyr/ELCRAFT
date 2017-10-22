@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class GladiatorForBattle : UnitForBattle
 {
+
 	protected override void Awake()
 	{
 		//unit stat load
+		actionCode = ActionCode.FireGladiator;
 		maxHp = 123;
 		atk = 10;
 		moveRange = 2;
