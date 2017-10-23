@@ -20,13 +20,13 @@ public struct ActionData
 {
 	[NonSerialized] public static readonly int UnitStart = 100;     // unit code will be start from 101~ 
 	[NonSerialized] public static readonly int SkillStart = 10;		// skill code will be start from 10~ 99
-	public int turn;
+	public int turnCount;
 	public int actionCode;
 	public int boardX, boardY;
 
-	public ActionData(int _turn, int _actionCode, int _boardX, int _boardY)
+	public ActionData(int _turnCount, int _actionCode, int _boardX, int _boardY)
 	{
-		turn = _turn;
+		turnCount = _turnCount;
 		actionCode = _actionCode;
 		boardX = _boardX;
 		boardY = _boardY;

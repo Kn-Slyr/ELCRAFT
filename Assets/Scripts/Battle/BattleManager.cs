@@ -33,7 +33,7 @@ public class BoardInfo
 	public const float boardOneBlockSize = 2.16f, boardHalfBlockSize = 1.08f;
 }
 
-public enum Turn { NONE, PLAY, PLAY_ING, SPAWN, SPAWN_ING, SKILL, SKILL_ING, PROCESS, PROCESS_ING };
+public enum Phase { NONE, PLAY, PLAY_ING, SPAWN, SPAWN_ING, SKILL, SKILL_ING, PROCESS, PROCESS_ING };
 public enum Mode { AI, PVP, MAKER }
 
 public class BattleManager : MonoBehaviour
@@ -41,8 +41,8 @@ public class BattleManager : MonoBehaviour
 	public static BattleManager instance = null;
 
 	public Mode mode;
-	public Turn turn;
-	public int turnCount = 0;
+	public Phase phase;
+	public int turnCount = 1;
 
 	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
 	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
@@ -57,7 +57,9 @@ public class BattleManager : MonoBehaviour
 	private const float battleInterval = 1f;    // intervals between from skill effect
 	public float gameSpeed;
 
-	public AIMaker aiMaker;
+	private AIMaker aiMaker;
+	private EnemyForAI enemyForAI;
+	//private ServerPVP serverPVP;
 	
 	// Use this for initialization
 	private void Awake()
@@ -74,24 +76,35 @@ public class BattleManager : MonoBehaviour
 	{
 		battleStat = new BattleStat();
 		battleStat.Init();
-		turn = Turn.PLAY;
+
+		if (mode == Mode.AI)
+		{
+			enemyForAI = new EnemyForAI();
+			enemyForAI.DataLoadAndSetup("");
+		}
+		else if(mode == Mode.MAKER)
+		{
+			aiMaker = GetComponent<AIMaker>();
+		}
+
+		phase = Phase.PLAY;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		switch(turn)
+		switch(phase)
 		{
-			case Turn.PLAY:
+			case Phase.PLAY:
 				StartCoroutine(UserPlay());
 				break;
-			case Turn.SPAWN:
+			case Phase.SPAWN:
 				StartCoroutine(UnitSpawn());
 				break;
-			case Turn.SKILL:
+			case Phase.SKILL:
 				StartCoroutine(SkillProcedure());
 				break;
-			case Turn.PROCESS:
+			case Phase.PROCESS:
 				StartCoroutine(BattleProcedure());
 				break;
 			default:
@@ -104,32 +117,37 @@ public class BattleManager : MonoBehaviour
 		// animation
 		Debug.Log(turnCount + " User Phase!");
 
-		turn = Turn.PLAY_ING;
+		phase = Phase.PLAY_ING;
 		yield return new WaitForSeconds(playerSpawnTimeLimit);
 
-		turn = Turn.SPAWN;
+		phase = Phase.SPAWN;
 
+		if (mode == Mode.AI)
+		{
+			enemyForAI.SetEnemyAction(turnCount);
+		}
 		// if pvp, data to server
 		// else if ai maker, save the values
-		if (mode != Mode.AI)
+		else if (mode != Mode.AI)
 		{
 			List<ActionData> doList = new List<ActionData>();
 			foreach (UnitForBattle spawnUnit in spawnUnitQueue)
 				doList.Add(new ActionData(turnCount, (int)spawnUnit.actionCode, spawnUnit.boardX, spawnUnit.boardY));
 
-			if (mode == Mode.PVP)
-				;
-			else if (mode == Mode.MAKER)
+			//if (mode == Mode.PVP)
+			//	;
+			//else 
+			if (mode == Mode.MAKER)
 				aiMaker.AddActionList(doList);
-			
 		}
+
 	}
 
 	// player's + enemy's units spawn for queue
 	IEnumerator UnitSpawn()
 	{
 		Debug.Log(turnCount + " Spawn Phase!");
-		turn = Turn.SPAWN_ING;
+		phase = Phase.SPAWN_ING;
 
 		// enemy spawn data will be loaded from db
 		// spawnQueue.add(loaded enemy's queue);
@@ -141,14 +159,14 @@ public class BattleManager : MonoBehaviour
 		}
 
 		spawnUnitQueue.Clear();
-		turn = Turn.SKILL;
+		phase = Phase.SKILL;
 	}
 
 	// commander's skill procedure, random order for enemy and player
 	IEnumerator SkillProcedure()
 	{
 		Debug.Log(turnCount + " Skill Phase!");
-		turn = Turn.SKILL_ING;
+		phase = Phase.SKILL_ING;
 
 		yield return new WaitForSeconds(skillInterval / gameSpeed);
 		for (int i = 0; i < commanderSkillQueue.Count; i++)
@@ -158,14 +176,14 @@ public class BattleManager : MonoBehaviour
 		}
 
 		commanderSkillQueue.Clear();
-		turn = Turn.PROCESS;
+		phase = Phase.PROCESS;
 	}
 
 	// unit's indivisual skill, move procedure
 	IEnumerator BattleProcedure()
 	{
 		Debug.Log(turnCount + " Battle Phase!");
-		turn = Turn.PROCESS_ING;
+		phase = Phase.PROCESS_ING;
 		// unitsInField sorted by unit's "speed" variables
 		SetUnitRandValue();
 		SortLiveUnitsBySpeed();	
@@ -179,7 +197,7 @@ public class BattleManager : MonoBehaviour
 			yield return new WaitForSeconds(battleInterval / gameSpeed);
 		}
 
-		turn = Turn.PLAY;
+		phase = Phase.PLAY;
 		turnCount++;
 	}
 

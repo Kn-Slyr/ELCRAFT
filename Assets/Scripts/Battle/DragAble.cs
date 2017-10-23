@@ -27,7 +27,7 @@ public abstract class DragAble : MonoBehaviour
 	private void PlaceObject()
 	{
 		nowDrag = false;
-		if (battleManager.turn != Turn.PLAY_ING)
+		if (battleManager.phase != Phase.PLAY_ING)
 		{
 			Debug.Log("Too late to drop");
 		}

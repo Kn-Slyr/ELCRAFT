@@ -19,7 +19,7 @@ public class DragStart : MonoBehaviour
 		{
 			Debug.Log("No mana for spawn");
 		}
-		else if(battleManager.turn != Turn.PLAY_ING)
+		else if(battleManager.phase != Phase.PLAY_ING)
 		{
 			Debug.Log("It's not your turn");
 		}

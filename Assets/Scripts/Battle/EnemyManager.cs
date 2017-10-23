@@ -2,23 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class EnemyManager : MonoBehaviour
+public abstract class EnemyManager 
 {
 	private BattleManager battleManager = BattleManager.instance;
 	private static readonly string[] UnitNames = {
 		"None", "UnitForFire/Gladiator"
 	};
 
-	protected abstract List<ActionData> LoadActionData(int turnCount);
+	protected abstract void LoadActionData(int turnCount, out List<ActionData> actions);
 
 	public void SetEnemyAction(int turnCount)
 	{
-		List<ActionData> actionList = LoadActionData(turnCount);
+		List<ActionData> actionList;
+		LoadActionData(turnCount, out actionList);
+
 		foreach(ActionData action in actionList)
 		{
-			if (action.actionCode > 100)
+			if (action.actionCode > ActionData.UnitStart)
 				AddUnitSpawnQueue(action);
-			else if (action.actionCode > 10)
+			else if (action.actionCode > ActionData.SkillStart)
 				AddCommanderSkillQueue(action);
 			else if(action.actionCode == 1)
 			{
@@ -29,15 +31,20 @@ public abstract class EnemyManager : MonoBehaviour
 
 	protected void AddUnitSpawnQueue (ActionData action)
 	{
-		string path = "Prefabs/" + UnitNames[action.actionCode];
+		string path = "Prefabs/" + UnitNames[action.actionCode - ActionData.UnitStart] + "ForBattle";
+		Debug.Log("load path : " + path);
 		GameObject unit = Resources.Load(path) as GameObject;
+		if (unit == null)
+			Debug.Log("load unit fail");
+		else
+			Debug.Log("Success load unit");
 		UnitForBattle unitClass = unit.GetComponent<UnitForBattle>();
 		unitClass.boardX = 14 - action.boardX;
 		unitClass.boardY = action.boardY;
 		unitClass.player = Player.ENEMY;
 
 		// @@ check and change position when already exists
-		Instantiate(unit);
+		MonoBehaviour.Instantiate(unit);
 		battleManager.spawnUnitQueue.Add(unitClass);
 	}
 

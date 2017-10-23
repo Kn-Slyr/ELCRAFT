@@ -4,9 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class AIMaker : MonoBehaviour {
-	public List<ActionData> actionList = new List<ActionData>();
-	private DataManager dataManager = new DataManager();
+	public List<ActionData> actionList;
+	private DataManager dataManager;
 	public InputField textBox;
+
+	private void Awake()
+	{
+		dataManager = new DataManager();
+		actionList = new List<ActionData>();
+	}
 
 	public void AddActionList(List<ActionData> datas)
 	{
