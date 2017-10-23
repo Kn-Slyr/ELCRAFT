@@ -22,7 +22,6 @@ public class UnitForSpawn : DragAble
 			
 			SetUnitData();
 			Instantiate(unitForBattle);
-			battleManager.spawnUnitQueue.Add(unitForBattle.GetComponent<UnitForBattle>());
 			// alpha to 50%
 		}
 	}

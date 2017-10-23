@@ -13,7 +13,7 @@ public class AIMaker : MonoBehaviour {
 		actionList.AddRange(datas);
 	}
 
-	public void SaveDataAsBIN()
+	public void SaveDataAsBinary()
 	{
 		string fileName = textBox.text;
 		dataManager.BinarySave<List<ActionData>>(actionList, fileName);

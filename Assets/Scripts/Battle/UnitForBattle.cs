@@ -32,6 +32,7 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 		// one turn shield for 20% of max hp
 		SetPosition();
 
+		battleManager.spawnUnitQueue.Add(this.GetComponent<UnitForBattle>());
 		battleManager.liveUnitList.Add(this.GetComponent<UnitForBattle>());
 	}
 
