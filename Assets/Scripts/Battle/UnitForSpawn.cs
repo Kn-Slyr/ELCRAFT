@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class UnitForSpawn : DragAble
 {
-	protected int manaCost;
 	public GameObject unitForBattle;
 
 	protected void SetUnitData()
@@ -18,7 +17,7 @@ public class UnitForSpawn : DragAble
 	{
 		if(CheckCondition())
 		{
-			battleManager.battleStat.userMana -= manaCost;
+			battleManager.battleStat.UseUserMana(manaCost);
 			
 			SetUnitData();
 			Instantiate(unitForBattle);

@@ -32,12 +32,8 @@ public abstract class EnemyManager
 	protected void AddUnitSpawnQueue (ActionData action)
 	{
 		string path = "Prefabs/" + UnitNames[action.actionCode - ActionData.UnitStart] + "ForBattle";
-		Debug.Log("load path : " + path);
+		//Debug.Log("load path : " + path);
 		GameObject unit = Resources.Load(path) as GameObject;
-		if (unit == null)
-			Debug.Log("load unit fail");
-		else
-			Debug.Log("Success load unit");
 		UnitForBattle unitClass = unit.GetComponent<UnitForBattle>();
 		unitClass.boardX = 14 - action.boardX;
 		unitClass.boardY = action.boardY;

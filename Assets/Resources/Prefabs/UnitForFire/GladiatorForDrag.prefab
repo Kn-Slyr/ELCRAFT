@@ -80,6 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardX: 0
   boardY: 0
+  manaCost: 10
   unitForBattle: {fileID: 1644936858921674, guid: 1a2794b97953b1c46b21ad2c8faf81d9,
     type: 2}
 --- !u!212 &212878253808016718

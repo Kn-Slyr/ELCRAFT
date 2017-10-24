@@ -6,6 +6,7 @@ public abstract class DragAble : MonoBehaviour
 {
 	public int boardX, boardY;
 	private bool nowDrag;
+	public int manaCost;
 
 	protected BattleManager battleManager = BattleManager.instance;
 	protected abstract void AddQueue();

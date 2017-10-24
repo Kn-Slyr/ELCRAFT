@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c057cf49862d0d542b9fbd170fd14411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 0
+  cost: 10
   unit: {fileID: 1753540922758484, guid: 3ff62d9909e1d804688d0fd61747bcd8, type: 2}
 --- !u!212 &212136504467025238
 SpriteRenderer:

@@ -1,32 +1,80 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-[SerializeField]
-public class BattleStat
+//[SerializeField]
+[Serializable]
+public class BattleStatus
 {
-	public int userMana;
-	public int userMaxMana;
-	public int userManaLevel;
+	[NonSerialized] private int[] manaMaxValue = { 500, 800, 1200, 1800 };
+	[NonSerialized] private int[] requirToAssimilate = { 200, 300, 500 };
+	private int maxLevel = 4;
+	private float manaRegenPercent = .15f;
+
+	private int userMana;
+	public int UserMana { get { return userMana; } }
+	
+	private int userManaLevel;
+	public int UserManaLevel { get { return userManaLevel; } }
+
 	public int enemyMana;
-	public int enemyMaxMana;
 	public int enemyManaLevel;
 
 	public int userCoreHP;
 	public int enemyCoreHP;
 
+	public Text userManaUI;
+	public Text userManaLevelUI;
+
 	public void Init()
 	{
-		userMana = 100;
-		userMaxMana = 300;
+		userMana = 0;
 		userManaLevel = 1;
-		userCoreHP = 1000;
-
+		userCoreHP = 100;
+		SetupManaUI();
+		SetupManaLevelUI();
 		// @@enemy's stat will be called from db
+	}
+
+	public void UseUserMana(int cost)
+	{
+		userMana -= cost;
+		SetupManaUI();
+	}
+
+	public void Assimilate()
+	{
+		if(userManaLevel < maxLevel && userMana > requirToAssimilate[userManaLevel])
+		{
+			UseUserMana(requirToAssimilate[userManaLevel]);
+			userManaLevel++;
+			SetupManaUI();
+			SetupManaLevelUI();
+		}
+	}
+
+	public void RefreshMana()
+	{
+		userMana += (int)(manaMaxValue[userManaLevel] * manaRegenPercent);
+		if (userMana > manaMaxValue[userManaLevel])
+			userMana = manaMaxValue[userManaLevel];
+		SetupManaUI();
+	}
+
+	private void SetupManaUI()
+	{
+		userManaUI.text = userMana + " / " + manaMaxValue[userManaLevel];
+	}
+
+	private void SetupManaLevelUI()
+	{
+		userManaLevelUI.text = userManaLevel.ToString();
 	}
 }
 
-public class BoardInfo
+public struct BoardInfo
 {
 	public const float boardHorMin = -17.5f, boardHorMax = 17.5f;
 	public const float boardVerMin = -5.4f, boardVerMax = 5.4f;
@@ -48,7 +96,7 @@ public class BattleManager : MonoBehaviour
 	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
 	public List<UnitForBattle> spawnUnitQueue = new List<UnitForBattle>();
 	public List<SkillForBattle> commanderSkillQueue = new List<SkillForBattle>();
-	public BattleStat battleStat;
+	public BattleStatus battleStat = new BattleStatus();
 	private int uniqueUnitNumber = 0;
 
 	private const float playerSpawnTimeLimit = 5f;   // not specfied, maybe 5s
@@ -74,7 +122,7 @@ public class BattleManager : MonoBehaviour
 
 	void InitBattle()
 	{
-		battleStat = new BattleStat();
+		//battleStat = new BattleStat();
 		battleStat.Init();
 
 		if (mode == Mode.AI)
@@ -116,7 +164,7 @@ public class BattleManager : MonoBehaviour
 	{
 		// animation
 		Debug.Log(turnCount + " User Phase!");
-
+		battleStat.RefreshMana();
 		phase = Phase.PLAY_ING;
 		yield return new WaitForSeconds(playerSpawnTimeLimit);
 

@@ -30,6 +30,10 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 		unitNumber = battleManager.GetUnitNumber();
 		nowHp = maxHp;
 		// one turn shield for 20% of max hp
+		if(player == Player.USER)
+			transform.localScale = new Vector3(1, 1, 1);
+		else if(player == Player.ENEMY)
+			transform.localScale = new Vector3(-1, 1, 1);
 		SetPosition();
 
 		battleManager.spawnUnitQueue.Add(this.GetComponent<UnitForBattle>());

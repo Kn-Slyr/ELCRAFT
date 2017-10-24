@@ -15,7 +15,7 @@ public class DragStart : MonoBehaviour
 
 	private void OnMouseDown()
 	{
-		if (battleManager.battleStat.userMana < cost)
+		if (battleManager.battleStat.UserMana < cost)
 		{
 			Debug.Log("No mana for spawn");
 		}

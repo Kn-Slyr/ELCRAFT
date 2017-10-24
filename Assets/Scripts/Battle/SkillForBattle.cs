@@ -5,14 +5,13 @@ using UnityEngine;
 public abstract class SkillForBattle : DragAble
 {
 	protected int leftTurn;
-	protected int manaCost;
 
 	protected override void AddQueue()
 	{
 		if (CheckCondition())
 		{
 			player = Player.USER;
-			battleManager.battleStat.userMana -= manaCost;
+			battleManager.battleStat.UseUserMana(manaCost);
 			battleManager.commanderSkillQueue.Add(this);
 		}
 	}
