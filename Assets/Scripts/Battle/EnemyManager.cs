@@ -35,7 +35,7 @@ public abstract class EnemyManager
 		//Debug.Log("load path : " + path);
 		GameObject unit = Resources.Load(path) as GameObject;
 		UnitForBattle unitClass = unit.GetComponent<UnitForBattle>();
-		unitClass.boardX = 14 - action.boardX;
+		unitClass.boardX = 15 - action.boardX;
 		unitClass.boardY = action.boardY;
 		unitClass.player = Player.ENEMY;
 

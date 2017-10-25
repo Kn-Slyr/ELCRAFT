@@ -8,8 +8,8 @@ using UnityEngine.UI;
 [Serializable]
 public class BattleStatus
 {
-	[NonSerialized] private int[] manaMaxValue = { 500, 800, 1200, 1800 };
-	[NonSerialized] private int[] requirToAssimilate = { 200, 300, 500 };
+	[NonSerialized] private int[] manaMaxValue = { 0, 500, 800, 1200, 1800 };
+	[NonSerialized] private int[] requirToAssimilate = { 0, 200, 300, 500 };
 	private int maxLevel = 4;
 	private float manaRegenPercent = .15f;
 
@@ -25,8 +25,12 @@ public class BattleStatus
 	public int userCoreHP;
 	public int enemyCoreHP;
 
+	public int turnCount = 1;
+
 	public Text userManaUI;
 	public Text userManaLevelUI;
+	public Text turnCounterUI;
+	public Button userAssimilateButton;
 
 	public void Init()
 	{
@@ -35,6 +39,8 @@ public class BattleStatus
 		userCoreHP = 100;
 		SetupManaUI();
 		SetupManaLevelUI();
+
+		userAssimilateButton.onClick.AddListener(Assimilate);
 		// @@enemy's stat will be called from db
 	}
 
@@ -52,6 +58,10 @@ public class BattleStatus
 			userManaLevel++;
 			SetupManaUI();
 			SetupManaLevelUI();
+		}
+		else
+		{
+			Debug.Log("Not enough to assimilate");
 		}
 	}
 
@@ -72,6 +82,16 @@ public class BattleStatus
 	{
 		userManaLevelUI.text = userManaLevel.ToString();
 	}
+
+	public void SetupTurnUI(int nowTurn)
+	{
+		turnCounterUI.text = nowTurn.ToString();
+	}
+
+	public void TurnCountPlus()
+	{
+		turnCount++;
+	}
 }
 
 public struct BoardInfo
@@ -90,8 +110,7 @@ public class BattleManager : MonoBehaviour
 
 	public Mode mode;
 	public Phase phase;
-	public int turnCount = 1;
-
+	
 	public List<UnitForBattle> liveUnitList = new List<UnitForBattle>();
 	public UnitForBattle[,] liveUnitListInBoard = new UnitForBattle[16, 5];
 	public List<UnitForBattle> spawnUnitQueue = new List<UnitForBattle>();
@@ -163,7 +182,8 @@ public class BattleManager : MonoBehaviour
 	IEnumerator UserPlay()
 	{
 		// animation
-		Debug.Log(turnCount + " User Phase!");
+		Debug.Log(battleStat.turnCount + " User Phase!");
+		battleStat.SetupTurnUI(battleStat.turnCount);
 		battleStat.RefreshMana();
 		phase = Phase.PLAY_ING;
 		yield return new WaitForSeconds(playerSpawnTimeLimit);
@@ -172,7 +192,7 @@ public class BattleManager : MonoBehaviour
 
 		if (mode == Mode.AI)
 		{
-			enemyForAI.SetEnemyAction(turnCount);
+			enemyForAI.SetEnemyAction(battleStat.turnCount);
 		}
 		// if pvp, data to server
 		// else if ai maker, save the values
@@ -180,7 +200,7 @@ public class BattleManager : MonoBehaviour
 		{
 			List<ActionData> doList = new List<ActionData>();
 			foreach (UnitForBattle spawnUnit in spawnUnitQueue)
-				doList.Add(new ActionData(turnCount, (int)spawnUnit.actionCode, spawnUnit.boardX, spawnUnit.boardY));
+				doList.Add(new ActionData(battleStat.turnCount, (int)spawnUnit.actionCode, spawnUnit.boardX, spawnUnit.boardY));
 
 			//if (mode == Mode.PVP)
 			//	;
@@ -194,7 +214,7 @@ public class BattleManager : MonoBehaviour
 	// player's + enemy's units spawn for queue
 	IEnumerator UnitSpawn()
 	{
-		Debug.Log(turnCount + " Spawn Phase!");
+		Debug.Log(battleStat.turnCount + " Spawn Phase!");
 		phase = Phase.SPAWN_ING;
 
 		// enemy spawn data will be loaded from db
@@ -213,7 +233,7 @@ public class BattleManager : MonoBehaviour
 	// commander's skill procedure, random order for enemy and player
 	IEnumerator SkillProcedure()
 	{
-		Debug.Log(turnCount + " Skill Phase!");
+		Debug.Log(battleStat.turnCount + " Skill Phase!");
 		phase = Phase.SKILL_ING;
 
 		yield return new WaitForSeconds(skillInterval / gameSpeed);
@@ -230,7 +250,7 @@ public class BattleManager : MonoBehaviour
 	// unit's indivisual skill, move procedure
 	IEnumerator BattleProcedure()
 	{
-		Debug.Log(turnCount + " Battle Phase!");
+		Debug.Log(battleStat.turnCount + " Battle Phase!");
 		phase = Phase.PROCESS_ING;
 		// unitsInField sorted by unit's "speed" variables
 		SetUnitRandValue();
@@ -246,7 +266,7 @@ public class BattleManager : MonoBehaviour
 		}
 
 		phase = Phase.PLAY;
-		turnCount++;
+		battleStat.TurnCountPlus();
 	}
 
 	void SetUnitRandValue()

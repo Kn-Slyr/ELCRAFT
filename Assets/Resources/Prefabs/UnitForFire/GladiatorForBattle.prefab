@@ -52,11 +52,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a2709aa3a831f14f81efbee2e39f23a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionCode: 101
   unitNumber: 0
   randValue: 404
-  player: 1
-  boardX: 0
-  boardY: 1
+  player: -1
+  boardX: 14
+  boardY: 2
 --- !u!212 &212929852224907092
 SpriteRenderer:
   m_ObjectHideFlags: 1

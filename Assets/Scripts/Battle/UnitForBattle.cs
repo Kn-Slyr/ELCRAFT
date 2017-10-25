@@ -26,6 +26,7 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 
 	protected virtual void Awake()
 	{
+		transform.SetParent(GameObject.Find("UnitsInField").transform, false);
 		skillStack = 0;
 		unitNumber = battleManager.GetUnitNumber();
 		nowHp = maxHp;
