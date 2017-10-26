@@ -9,7 +9,7 @@ public class GladiatorForBattle : UnitForBattle
 	{
 		//unit stat load
 		actionCode = ActionCode.FireGladiator;
-		maxHp = 123;
+		maxHp = 100;
 		atk = 10;
 		moveRange = 2;
 
@@ -36,6 +36,7 @@ public class GladiatorForBattle : UnitForBattle
 	protected override bool AttackLogic()
 	{
 		UnitForBattle target = null;
+		// use player value as attack direction
 		if (battleManager.SearchInBoard((int)player + boardX, boardY, player, ref target))
 		{
 			Debug.Log(GetName() + " Attack!");

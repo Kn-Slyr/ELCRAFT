@@ -11,13 +11,13 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 	protected int skillStack;
 	protected int nowHp, maxHp;
 	protected int atk;
-	protected int shield;
 	protected int speed;
 	protected int moveRange;
 	public int randValue;
 	protected float damageReduce;
 	public Player player;
 	public int boardX, boardY;
+	protected List<UnitCondition> conditions;
 	protected BattleManager battleManager = BattleManager.instance;
 
 	public int GetSpeed() { return speed; }
@@ -89,21 +89,7 @@ public abstract class UnitForBattle : MonoBehaviour //, IComparer, System.ICompa
 	public bool TakeDamage(int damage)
 	{
 		damage = (int)(damage * (1 - damageReduce));
-
-		if (shield > 0)
-		{
-			if (shield > damage)
-			{
-				shield -= damage;
-				damage = 0;
-			}
-			else
-			{
-				damage -= shield;
-				shield = 0;
-			}
-			// shield animation
-		}
+		
 
 		if (damage > 0)
 		{
